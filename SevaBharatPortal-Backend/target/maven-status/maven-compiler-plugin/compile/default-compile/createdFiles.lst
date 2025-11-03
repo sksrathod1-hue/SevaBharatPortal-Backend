@@ -1,0 +1,9 @@
+com\sevabharat\portal\config\SecurityConfig.class
+com\sevabharat\portal\service\CustomUserDetailsService.class
+com\sevabharat\portal\controller\SchemeController.class
+com\sevabharat\portal\controller\HomeController.class
+com\sevabharat\portal\SevabharatPortalApplication.class
+com\sevabharat\portal\model\User.class
+com\sevabharat\portal\controller\UserController.class
+com\sevabharat\portal\repository\UserRepository.class
+com\sevabharat\portal\controller\AuthController.class

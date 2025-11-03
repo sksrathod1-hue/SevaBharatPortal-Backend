@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Seva Bharat Portal | Government Schemes for All Indians</title>
+<!-- BOOTSTRAP 5 -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<!-- GOOGLE FONTS -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap"
+  rel="stylesheet"
+/>
+<!-- FONT AWESOME -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+/>
+<!-- LEAFLET CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<style>
+:root {
+  --color-primary: #0a2540;
+  --color-secondary: #f0f4f9;
+  --color-accent-saffron: #FF9933;
+  --color-accent-green: #138808;
+  --color-text-light: #f8f9fa;
+  --color-text-dark: #343a40;
+  --color-white: #FFFFFF;
+  --border-radius: 0.75rem;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.1);
+  /* --- Category Colors --- */
+  --cat-housing: #5a67d8; /* Indigo */
+  --cat-health: #d53f8c; /* Pink */
+  --cat-agriculture: #38a169; /* Green */
+  --cat-business: #dd6b20; /* Orange */
+  --cat-utility: #00b5d8; /* Cyan */
+  --cat-finance: #d69e2e; /* Gold */
+  --cat-education: #805ad5; /* Purple */
+  --cat-social: #3182ce; /* Blue */
+}
+
+/* --- Animation Keyframes --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes animated-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floating-background {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.navbar {
+  padding: 0.5rem 0;
+}
+.navbar-brand {
+  font-size: 1.6rem;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text-dark);
+  background: linear-gradient(-45deg, #ffdeb3, var(--color-white), #c8e6c9);
+  background-size: 400% 400%;
+  animation: floating-background 15s ease-infinite;
+  padding-top: 80px; /* Space for fixed navbar */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.content-panel h2 {
+  color: var(--color-primary);
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-saffron),
+    var(--color-accent-green),
+    var(--color-accent-saffron)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: animated-gradient 4s ease-in-out infinite;
+}
+
+.title-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-saffron),
+    var(--color-accent-green),
+    var(--color-accent-saffron)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: animated-gradient 4s ease-in-out infinite;
+}
+
+header.text-center > p {
+  opacity: 0;
+  animation: fadeIn 1s ease-out 0.5s forwards;
+}
+
+.content-panel {
+  background: var(--color-white);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* --- Dashboard Nav Links --- */
+#dashboard-links .nav-link {
+  font-weight: 500;
+  color: var(--color-primary);
+  transition: all 0.2s ease-in-out;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  position: relative;
+  background-color: transparent;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+#dashboard-links .nav-link:hover,
+#dashboard-links .nav-link.active {
+  color: var(--color-accent-green);
+  background-color: var(--color-secondary);
+}
+
+#dashboard-links .nav-link.active {
+  font-weight: 600;
+}
+
+.logged-in-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #065f46; /* Dark green */
+  background-color: #d1fae5; /* Light green */
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.btn-logout {
+  background-color: transparent;
+  color: #dc3545;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #fee2e2;
+  border-color: #dc3545;
+}
+
+/* --- Professional Scheme Card Styling --- */
+.scheme-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+}
+
+.scheme-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(10, 37, 64, 0.15);
+}
+
+.scheme-card-header {
+  padding: 1rem 3.5rem 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.scheme-card-icon-wrapper {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  color: var(--color-white);
+}
+
+.scheme-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0;
+}
+
+/* Applying category colors */
+.scheme-card[data-category='Housing'] .scheme-card-icon-wrapper {
+  background-color: var(--cat-housing);
+}
+.scheme-card[data-category='Health'] .scheme-card-icon-wrapper {
+  background-color: var(--cat-health);
+}
+.scheme-card[data-category='Agriculture'] .scheme-card-icon-wrapper {
+  background-color: var(--cat-agriculture);
+}
+.scheme-card[data-category='Business'] .scheme-card-icon-wrapper {
+  background-color: var(--cat-business);
+}
+.scheme-card[data-category='Education'] .scheme-card-icon-wrapper {
+  background-color: var(--cat-education);
+}
+.scheme-card[data-category='Social'] .scheme-card-icon-wrapper {
+  background-color: var(--cat-social);
+}
+
+.scheme-card .card-body {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: auto;
+  width: 100%;
+}
+
+.card-buttons .btn {
+  flex-grow: 1;
+  max-width: 140px;
+  font-weight: 600;
+  border: none;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-learn-more {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.btn-apply-now {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-save-scheme {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  font-size: 1rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.btn-save-scheme:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-save-scheme.saved {
+  color: var(--color-white);
+  background-color: var(--color-accent-saffron);
+}
+
+/* --- Glassmorphism Panels --- */
+#eligibility-checker.content-panel,
+#all-schemes.content-panel,
+#map-section.content-panel,
+#profile-section.content-panel {
+  background: rgba(255, 255, 255, 0.45);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* --- LOGIN MODAL STYLING --- */
+#loginModal .modal-content {
+  background-color: #fdfaf6;
+  border-radius: var(--border-radius);
+  border: none;
+  padding: 1rem;
+  position: relative; /* Set positioning context for the close button */
+}
+#loginModal .btn-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 2;
+}
+#loginModal .modal-header {
+  border-bottom: none;
+  text-align: center;
+  display: block;
+  padding-top: 1.5rem;
+}
+.login-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #d88621, #138808);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.login-subtitle {
+  color: #6c757d;
+  font-weight: 500;
+}
+.btn-gradient-login {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-saffron),
+    var(--color-accent-green)
+  );
+  border: none;
+  color: white;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+/* --- Professional Redirect Modal --- */
+#redirectModal .modal-content {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.redirect-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: var(--color-primary);
+}
+
+#redirectModal .modal-body h4 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+#redirectModal .modal-body .btn {
+  font-weight: 600;
+  border-radius: 50px;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  transition: transform 0.2s ease;
+}
+
+#redirectModal .modal-body .btn:hover {
+  transform: translateY(-2px);
+}
+
+#redirectModal .btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+#redirectModal .btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d;
+}
+
+/* --- Main Gradient Button --- */
+.btn-gradient-main {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-saffron),
+    var(--color-accent-green)
+  );
+  color: var(--color-white);
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn-gradient-main:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+  opacity: 0.9;
+  color: var(--color-white);
+}
+
+/* --- Profile Section Enhancements --- */
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+
+.saved-scheme-card {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-white);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out;
+  border: 1px solid var(--color-secondary);
+  margin-bottom: 1rem;
+}
+.saved-scheme-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.saved-scheme-card .scheme-card-icon-wrapper {
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+.saved-scheme-card-body {
+  flex-grow: 1;
+}
+.saved-scheme-card-body .card-title {
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+.saved-scheme-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 767.98px) {
+  body {
+    padding-top: 70px;
+  }
+  .display-4 {
+    font-size: 2rem;
+  }
+  .content-panel {
+    padding: 1.5rem;
+  }
+  .schemes-header {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION BAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand title-gradient mb-0" href="#" id="home-link" style="cursor:pointer;">Seva Bharat Portal</a>
+    <div id="nav-user-section" class="ms-auto d-flex align-items-center">
+      <!-- This content is dynamically generated by JavaScript -->
+    </div>
+  </div>
+</nav>
+
+<div class="container my-5">
+
+  <!-- ===== MAIN CONTENT WRAPPER (for toggling view) ===== -->
+  <main id="main-content">
+    <!-- ===== HEADER ===== -->
+    <header class="text-center mb-5">
+      <h1 class="display-4 title-gradient">Welcome to the Citizen Portal</h1>
+      <p class="lead text-muted">A single, unified platform for government welfare schemes.</p>
+    </header>
+
+    <!-- ===== ELIGIBILITY CHECKER ===== -->
+    <section id="eligibility-checker" class="content-panel">
+      <h2 class="text-center mb-4">Quick Eligibility Check</h2>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-3">
+          <label class="form-label" for="name">Your Name</label>
+          <input type="text" class="form-control" id="name" placeholder="e.g., Ramesh Kumar" />
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <label class="form-label" for="state">State</label>
+          <input type="text" class="form-control" id="state" placeholder="e.g., Maharashtra" />
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <label class="form-label" for="age">Your Age</label>
+          <input type="number" class="form-control" id="age" placeholder="e.g., 35" />
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <label class="form-label" for="income">Annual Income (₹)</label>
+          <input type="number" class="form-control" id="income" placeholder="e.g., 250000" />
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <button id="check-eligibility-btn" class="btn btn-gradient-main btn-lg">Find My Schemes</button>
+      </div>
+    </section>
+
+    <!-- ===== ALL SCHEMES ===== -->
+    <section id="all-schemes" class="content-panel">
+      <h2 id="schemes-list-title" class="text-center mb-4">All Government Schemes</h2>
+      <button id="reset-filter-btn" class="btn btn-sm btn-outline-danger mb-3 d-none">Clear Eligibility Filter & Show All</button>
+      <div class="row g-4" id="schemes-grid">
+        <!-- Scheme cards will be dynamically loaded here -->
+      </div>
+    </section>
+
+    <!-- ===== MAP SECTION ===== -->
+    <section id="map-section" class="content-panel">
+      <h2 class="text-center mb-4">Find a Government Service Center Near You</h2>
+      <div id="map" style="height: 450px; border-radius: var(--border-radius); z-index: 0;"></div>
+    </section>
+  </main>
+
+  <!-- ===== PROFILE SECTION (Initially Hidden) ===== -->
+  <section id="profile-section" class="content-panel d-none">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 id="profile-title" class="mb-0">My Dashboard</h2>
+      <button class="btn btn-outline-primary" id="back-to-schemes-btn"><i class="fa-solid fa-arrow-left me-2"></i>Back to Portal</button>
+    </div>
+
+    <!-- Professional Profile Card -->
+    <div class="card mb-5 border-0" style="background-color: var(--color-secondary);">
+      <div class="card-body p-4">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <div class="profile-avatar">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+          </div>
+          <div class="col">
+            <h4 class="mb-0" id="profile-username-display">Citizen Name</h4>
+            <p class="text-muted mb-1" id="profile-state-display">Maharashtra</p>
+            <small class="text-muted">Joined: <span id="profile-join-date"></span></small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Visualization Card -->
+    <div class="card mb-5 border-0" style="background-color: var(--color-secondary);">
+      <div class="card-body p-4">
+        <h4 class="mb-3 text-center">Your Saved Schemes Breakdown</h4>
+        <div style="max-width: 400px; margin: auto; position: relative;">
+          <canvas id="savedSchemesChart"></canvas>
+          <div
+            id="chart-placeholder"
+            class="text-center text-muted"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;"
+          >
+            <p class="mb-0"><i class="fa-solid fa-chart-pie fa-2x mb-2"></i></p>
+            <p>Save schemes to see your personal dashboard.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="mt-4 mb-4">My Saved Schemes</h3>
+    <div id="saved-schemes-grid">
+      <!-- Saved scheme cards will be dynamically loaded here -->
+    </div>
+  </section>
+</div>
+
+<!-- ===== SCHEME DETAIL MODAL ===== -->
+<div class="modal fade" id="schemeDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="schemeDetailModalLabel">Scheme Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="scheme-modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NEW LOGIN MODAL ===== -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div>
+          <h2 class="login-title">Seva Sarthi</h2>
+          <p class="login-subtitle">Your Guide to Government Schemes</p>
+        </div>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <form id="loginForm">
+          <div class="mb-3">
+            <label for="login-username" class="form-label">Username / Aadhaar Number</label>
+            <input type="text" class="form-control" id="login-username" required />
+          </div>
+          <div class="mb-3">
+            <label for="login-password" class="form-label">Password</label>
+            <div class="position-relative">
+              <input type="password" class="form-control" id="login-password" required />
+              <i class="fa-solid fa-eye password-toggle-icon" id="togglePassword"></i>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-gradient-login w-100">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REGISTRATION MODAL ===== -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header d-flex justify-content align-items-center">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="modal-title" id="registerModalLabel" style="font: size 16px;">Register for Seva Bharat</h>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <form id="registerForm">
+          <div class="mb-3">
+            <label for="register-username" class="form-label">Username / Aadhaar Number</label>
+            <input type="text" class="form-control" id="register-username" required />
+          </div>
+          <div class="mb-3">
+            <label for="register-password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="register-password" required />
+          </div>
+          <button type="submit" class="btn btn-gradient-main w-100 mt-2">Register</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REDIRECT CONFIRMATION MODAL ===== -->
+<div class="modal fade" id="redirectModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="redirect-icon-wrapper mb-3">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </div>
+        <h4 class="modal-title mb-2">You're Leaving Seva Bharat</h4>
+        <p class="text-muted"
+          >You will be redirected to an official government website to complete your application. Please have your documents ready.</p
+        >
+        <div class="d-flex justify-content-center gap-2 mt-4">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            >Stay Here</button
+          >
+          <button type="button" class="btn btn-primary" id="confirm-redirect-btn">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- Existing JavaScript code (your code) ---
+
+  const categoryColors = {
+    "Housing": "#5a67d8",
+    "Health": "#d53f8c",
+    "Agriculture": "#38a169",
+    "Business": "#dd6b20",
+    "Education": "#805ad5",
+    "Social": "#3182ce"
+  };
+
+  const schemesData = [
+    { name: "PM Awas Yojana (Urban)", category: "Housing", minAge: 18, maxIncome: 600000, officialLink: "https://pmay-urban.gov.in/", details: { objective: "To provide a pucca house to all eligible urban households.", benefits: "Subsidy on home loan interest rates.", documents: "Aadhaar Card, Proof of Income, Bank Account Details."}},
+    { name: "Ayushman Bharat PM-JAY", category: "Health", maxIncome: 500000, officialLink: "https://pmjay.gov.in/", details: { objective: "To provide health coverage to over 10 crore poor families.", benefits: "Cashless access to health care services.", documents: "Aadhaar Card, Ration Card."}},
+    { name: "PM Kisan Samman Nidhi", category: "Agriculture", minAge: 18, officialLink: "https://pmkisan.gov.in/", details: { objective: "To supplement the financial needs of Small and Marginal Farmers.", benefits: "Direct income support of ₹6,000 per year.", documents: "Aadhaar Card, Landholding papers."}},
+    { name: "Mudra Yojana", category: "Business", minAge: 18, officialLink: "https://www.mudra.org.in/", details: { objective: "To provide funding to the non-corporate, non-farm small/micro enterprises.", benefits: "Loans under Shishu, Kishor, and Tarun categories.", documents: "Business plan, KYC Documents."}},
+    { name: "Sarva Shiksha Abhiyan", category: "Education", officialLink: "#", details: { objective: "To provide for a variety of interventions for universal access and retention.", benefits: "Free and compulsory education to children.", documents: "Birth Certificate."}},
+    { name: "National Social Assistance", category: "Social", minAge: 60, officialLink: "#", details: { objective: "To provide a basic level of financial support to the elderly, widows and persons with disabilities.", benefits: "Monthly pension.", documents: "Aadhaar Card, BPL Card."}},
+  ];
+
+  // Generate more schemes for demo
+  for (let i = 0; i < 45; i++) {
+    const category = ["Housing", "Health", "Agriculture", "Business", "Education", "Social"][i % 6];
+    let minAge, maxIncome;
+    switch (category) {
+      case "Housing": minAge = 21; maxIncome = 500000 + (i * 10000); break;
+      case "Health": maxIncome = 300000 + (i * 5000); break;
+      case "Agriculture": minAge = 18; break;
+      case "Business": minAge = 18; maxIncome = 1000000; break;
+      case "Education": maxIncome = 800000; break;
+      case "Social": minAge = 58; break;
+    }
+    schemesData.push({ name: `Additional ${category} Scheme #${i + 1}`, category: category, minAge: minAge, maxIncome: maxIncome, officialLink: "#", details: { objective: "Placeholder objective", benefits: "Placeholder benefits", documents: "Placeholder documents" } });
+  }
+
+  const schemesGrid = document.getElementById('schemes-grid');
+  const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+  const schemeDetailModal = new bootstrap.Modal(document.getElementById('schemeDetailModal'));
+  const redirectModal = new bootstrap.Modal(document.getElementById('redirectModal'));
+  const confirmRedirectBtn = document.getElementById('confirm-redirect-btn');
+  const loginForm = document.getElementById('loginForm');
+  const togglePassword = document.getElementById('togglePassword');
+  const schemesListTitle = document.getElementById('schemes-list-title');
+  const resetFilterBtn = document.getElementById('reset-filter-btn');
+  const checkEligibilityBtn = document.getElementById('check-eligibility-btn');
+  const navUserSection = document.getElementById('nav-user-section');
+  const mainContent = document.getElementById('main-content');
+  const profileSection = document.getElementById('profile-section');
+  const savedSchemesGrid = document.getElementById('saved-schemes-grid');
+  const chartPlaceholder = document.getElementById('chart-placeholder');
+
+  let isLoggedIn = false;
+  let loggedInUsername = 'Citizen';
+  let pendingApplyUrl = null;
+  let currentFilteredSchemes = [...schemesData];
+  let allSchemesVisible = false;
+  let savedSchemes = []; // To store saved scheme indices
+  let savedSchemesChartInstance = null; // To hold the chart instance
+
+  // Functions for rendering schemes
+  function createSchemeCardHTML(scheme, index) {
+    const icons = {
+      Housing: 'fa-house-chimney',
+      Health: 'fa-heart-pulse',
+      Agriculture: 'fa-tractor',
+      Business: 'fa-briefcase',
+      Education: 'fa-graduation-cap',
+      Social: 'fa-users'
+    };
+    const iconClass = icons[scheme.category] || 'fa-file-alt';
+    const isSaved = savedSchemes.includes(index);
+    const saveIconClass = isSaved ? 'fa-solid fa-bookmark saved' : 'fa-regular fa-bookmark';
+
+    return `
+      <div class="scheme-card" data-category="${scheme.category}">
+        <i class="btn-save-scheme ${saveIconClass}" data-scheme-index="${index}" title="Save Scheme"></i>
+        <div class="scheme-card-header">
+          <div class="scheme-card-icon-wrapper"><i class="fa-solid ${iconClass}"></i></div>
+          <h5 class="card-title">${scheme.name}</h5>
+        </div>
+        <div class="card-body">
+          <p class="card-text">${scheme.details.objective || 'Details about this scheme.'}</p>
+          <div class="card-buttons">
+            <button class="btn btn-learn-more" data-scheme-index="${index}">Know More</button>
+            <button class="btn btn-apply-now" data-link="${scheme.officialLink}">Apply Now</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderSchemes(schemes, gridElement) {
+    gridElement.innerHTML = '';
+    if (schemes.length === 0) {
+      gridElement.innerHTML = `<p class="text-muted text-center col-12">No schemes match the criteria.</p>`;
+      return;
+    }
+
+    const schemesToDisplay = allSchemesVisible ? schemes : schemes.slice(0, 6);
+
+    schemesToDisplay.forEach((scheme) => {
+      const card = document.createElement('div');
+      card.className = 'col-md-6 col-lg-4';
+      const originalIndex = schemesData.indexOf(scheme);
+      card.innerHTML = createSchemeCardHTML(scheme, originalIndex);
+      gridElement.appendChild(card);
+    });
+
+    if (gridElement.id === 'schemes-grid' && schemes.length > 6) {
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'col-12 text-center mt-4';
+      if (allSchemesVisible) {
+        buttonContainer.innerHTML = `<button id="show-less-btn" class="btn btn-outline-secondary">Show Less Schemes</button>`;
+      } else {
+        buttonContainer.innerHTML = `<button id="show-more-btn" class="btn btn-outline-primary">Show More Schemes</button>`;
+      }
+      gridElement.appendChild(buttonContainer);
+    }
+  }
+
+  // Saved schemes rendering
+  function createSavedSchemeCardHTML(scheme, index) {
+    const icons = {
+      Housing: 'fa-house-chimney',
+      Health: 'fa-heart-pulse',
+      Agriculture: 'fa-tractor',
+      Business: 'fa-briefcase',
+      Education: 'fa-graduation-cap',
+      Social: 'fa-users'
+    };
+    const iconClass = icons[scheme.category] || 'fa-file-alt';
+    const categoryKey = scheme.category.toLowerCase();
+
+    return `
+      <div class="saved-scheme-card">
+        <div class="scheme-card-icon-wrapper" style="background-color: var(--cat-${categoryKey});">
+          <i class="fa-solid ${iconClass}"></i>
+        </div>
+        <div class="saved-scheme-card-body">
+          <h6 class="card-title">${scheme.name}</h6>
+          <p class="card-text small text-muted mb-0">${scheme.category}</p>
+        </div>
+        <div class="saved-scheme-card-actions">
+          <button class="btn btn-sm btn-learn-more" data-scheme-index="${index}">Details</button>
+          <button class="btn btn-sm btn-apply-now" data-link="${scheme.officialLink}">Apply</button>
+          <button class="btn btn-sm btn-outline-danger btn-remove-scheme" data-scheme-index="${index}" title="Remove Scheme"><i class="fa-solid fa-trash-alt"></i></button>
+        </div>
+      </div>`;
+  }
+
+  function renderSavedSchemes() {
+    savedSchemesGrid.innerHTML = '';
+    const savedSchemesData = savedSchemes.map((index) => schemesData[index]);
+    if (savedSchemesData.length === 0) {
+      savedSchemesGrid.innerHTML = `<p class="text-muted text-center col-12">You haven't saved any schemes yet. Click the bookmark icon on a scheme to save it.</p>`;
+    } else {
+      savedSchemesData.forEach((scheme) => {
+        const originalIndex = schemesData.indexOf(scheme);
+        savedSchemesGrid.innerHTML += createSavedSchemeCardHTML(scheme, originalIndex);
+      });
+    }
+    renderSavedSchemesChart();
+  }
+
+  function renderSavedSchemesChart() {
+    if (savedSchemesChartInstance) {
+      savedSchemesChartInstance.destroy();
+    }
+
+    const savedSchemesData = savedSchemes.map((index) => schemesData[index]);
+
+    if (savedSchemesData.length === 0) {
+      chartPlaceholder.style.display = 'block';
+      return;
+    } else {
+      chartPlaceholder.style.display = 'none';
+    }
+
+    const categoryCounts = savedSchemesData.reduce((acc, scheme) => {
+      acc[scheme.category] = (acc[scheme.category] || 0) + 1;
+      return acc;
+    }, {});
+
+    const labels = Object.keys(categoryCounts);
+    const data = Object.values(categoryCounts);
+    const backgroundColors = labels.map((label) => categoryColors[label] || '#cccccc');
+
+    const ctx = document.getElementById('savedSchemesChart').getContext('2d');
+    savedSchemesChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Saved Schemes',
+            data: data,
+            backgroundColor: backgroundColors,
+            borderColor: 'var(--color-secondary)',
+            borderWidth: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                let label = context.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed !== null) {
+                  label += context.parsed + ' scheme(s)';
+                }
+                return label;
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Show profile view
+  function showProfileView() {
+    mainContent.classList.add('d-none');
+    profileSection.classList.remove('d-none');
+    document.getElementById('profile-username-display').textContent = loggedInUsername;
+    document.getElementById('profile-state-display').textContent = document.getElementById('state').value || 'Not Specified';
+    document.getElementById('profile-join-date').textContent = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.querySelector('#dashboard-links .nav-link[data-view="profile"]').classList.add('active');
+    renderSavedSchemes();
+    window.scrollTo(0, 0);
+  }
+
+  // Show main view
+  function showMainView() {
+    mainContent.classList.remove('d-none');
+    profileSection.classList.add('d-none');
+    const activeLink = document.querySelector('#dashboard-links .nav-link.active');
+    if (activeLink) activeLink.classList.remove('active');
+  }
+
+  // Update navigation buttons
+  function updateNavButtons() {
+    navUserSection.innerHTML = '';
+
+    if (isLoggedIn) {
+      navUserSection.innerHTML = `
+        <div id="dashboard-links" class="d-flex align-items-center">
+          <a class="nav-link mx-1" data-view="profile"><i class="fa-solid fa-user-circle me-1"></i>My Profile</a>
+        </div>
+        <div class="ms-3 vr"></div>
+        <span class="logged-in-status ms-3"><i class="fa-solid fa-circle-check me-2"></i>Logged In</span>
+        <button id="logout-btn-nav" class="btn btn-logout ms-2" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+      `;
+      document
+        .getElementById('logout-btn-nav')
+        .addEventListener('click', () => {
+          isLoggedIn = false;
+          savedSchemes = [];
+          if (savedSchemesChartInstance) {
+            savedSchemesChartInstance.destroy();
+            savedSchemesChartInstance = null;
+          }
+          showMainView();
+          updateNavButtons();
+          renderSchemes(currentFilteredSchemes, schemesGrid);
+        });
+      document
+        .querySelector('#dashboard-links .nav-link[data-view="profile"]')
+        .addEventListener('click', showProfileView);
+    } else {
+      navUserSection.innerHTML = `
+        <button id="login-btn-nav" class="btn btn-sm btn-gradient-main d-flex align-items-center me-2"><i class="fa-solid fa-right-to-bracket me-2"></i>Login</button>
+        <button id="register-btn" class="btn btn-sm btn-outline-primary d-flex align-items-center"><i class="fa-solid fa-user-plus me-2"></i>Register</button>
+      `;
+      document
+        .getElementById('login-btn-nav')
+        .addEventListener('click', () => loginModal.show());
+      document
+        .getElementById('register-btn')
+        .addEventListener('click', () => {
+          // Show registration modal
+          registerModal.show();
+        });
+    }
+  }
+
+  // Confirm and redirect
+  function confirmAndRedirect(url) {
+    pendingApplyUrl = url;
+    redirectModal.show();
+  }
+
+  // Event delegation for clicks
+  document.body.addEventListener('click', (e) => {
+    const target = e.target;
+
+    const applyBtn = target.closest('.btn-apply-now');
+    if (applyBtn) {
+      const url = applyBtn.dataset.link;
+      if (isLoggedIn) {
+        confirmAndRedirect(url);
+      } else {
+        pendingApplyUrl = url;
+        loginModal.show();
+      }
+    }
+
+    const learnMoreBtn = target.closest('.btn-learn-more');
+    if (learnMoreBtn) {
+      const schemeIndex = learnMoreBtn.dataset.schemeIndex;
+      const scheme = schemesData[schemeIndex];
+      if (scheme && scheme.details) {
+        document.getElementById('schemeDetailModalLabel').textContent = scheme.name;
+        document.getElementById('scheme-modal-body').innerHTML = `
+          <h6>Objective</h6><p>${scheme.details.objective}</p>
+          <h6>Benefits</h6><p>${scheme.details.benefits}</p>
+          <h6>Documents Required</h6><p>${scheme.details.documents}</p>`;
+        schemeDetailModal.show();
+      }
+    }
+
+    if (target.id === 'show-more-btn') {
+      allSchemesVisible = true;
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+    }
+    if (target.id === 'show-less-btn') {
+      allSchemesVisible = false;
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+      document.getElementById('all-schemes').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const saveBtn = target.closest('.btn-save-scheme');
+    if (saveBtn) {
+      if (!isLoggedIn) {
+        loginModal.show();
+        return;
+      }
+      const schemeIndex = parseInt(saveBtn.dataset.schemeIndex);
+      const indexInSaved = savedSchemes.indexOf(schemeIndex);
+      if (indexInSaved > -1) {
+        savedSchemes.splice(indexInSaved, 1);
+      } else {
+        savedSchemes.push(schemeIndex);
+      }
+
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+      if (!profileSection.classList.contains('d-none')) {
+        renderSavedSchemes();
+      }
+    }
+
+    const removeBtn = target.closest('.btn-remove-scheme');
+    if (removeBtn) {
+      const schemeIndex = parseInt(removeBtn.dataset.schemeIndex);
+      const indexInSaved = savedSchemes.indexOf(schemeIndex);
+      if (indexInSaved > -1) {
+        savedSchemes.splice(indexInSaved, 1);
+      }
+      renderSavedSchemes();
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+    }
+  });
+
+  togglePassword.addEventListener('click', function () {
+    const passwordInput = document.getElementById('login-password');
+    const type =
+      passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+  });
+
+  // Login form submit
+  document
+    .getElementById('loginForm')
+    .addEventListener('submit', (e) => {
+      e.preventDefault();
+      isLoggedIn = true;
+      loggedInUsername =
+        document.getElementById('login-username').value || 'Citizen';
+      loginModal.hide();
+      updateNavButtons();
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+      if (pendingApplyUrl) {
+        confirmAndRedirect(pendingApplyUrl);
+      }
+    });
+
+  document
+    .getElementById('confirm-redirect-btn')
+    .addEventListener('click', () => {
+      if (pendingApplyUrl) {
+        window.open(pendingApplyUrl, '_blank');
+        pendingApplyUrl = null;
+      }
+      redirectModal.hide();
+    });
+
+  // --- Registration logic ---
+  // Create registration modal instance
+  const registerModal = new bootstrap.Modal(
+    document.getElementById('registerModal')
+  );
+
+  // Registration form submit
+  document
+    .getElementById('registerForm')
+    .addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('register-username').value.trim();
+      if (username) {
+        loggedInUsername = username; // Save username
+        isLoggedIn = true;           // Auto login after registration
+        registerModal.hide();        // Close modal
+        updateNavButtons();          // Update nav to reflect logged-in state
+        showProfileView();           // Show profile/dashboard
+      } else {
+        alert('Please enter a username.');
+      }
+    });
+
+  // Eligibility check
+  document
+    .getElementById('check-eligibility-btn')
+    .addEventListener('click', () => {
+      const age = parseInt(document.getElementById('age').value) || 0;
+      const income = parseInt(document.getElementById('income').value) || Infinity;
+      currentFilteredSchemes = schemesData.filter((scheme) => {
+        const ageMatch = !scheme.minAge || age >= scheme.minAge;
+        const incomeMatch = !scheme.maxIncome || income <= scheme.maxIncome;
+        return ageMatch && incomeMatch;
+      });
+      allSchemesVisible = false;
+      schemesListTitle.textContent = 'Eligible Schemes For You';
+      resetFilterBtn.classList.remove('d-none');
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+    });
+
+  // Reset filter
+  document
+    .getElementById('reset-filter-btn')
+    .addEventListener('click', () => {
+      currentFilteredSchemes = [...schemesData];
+      allSchemesVisible = false;
+      schemesListTitle.textContent = 'All Government Schemes';
+      resetFilterBtn.classList.add('d-none');
+      renderSchemes(currentFilteredSchemes, schemesGrid);
+    });
+
+  document
+    .getElementById('back-to-schemes-btn')
+    .addEventListener('click', showMainView);
+  document
+    .getElementById('home-link')
+    .addEventListener('click', showMainView);
+
+  // Initialize Map
+  function initializeMap() {
+    const defaultCoords = [19.2423, 73.1313];
+    const map = L.map('map').setView(defaultCoords, 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    const serviceCenters = [
+      {
+        name: 'Maha E-Seva Kendra',
+        address: 'Kalyan Station Rd, Kalyan West',
+        lat: 19.245,
+        lon: 73.135,
+      },
+      {
+        name: 'Aadhaar Seva Kendra',
+        address: 'Near Shivaji Chowk, Kalyan',
+        lat: 19.238,
+        lon: 73.128,
+      },
+      {
+        name: 'Citizen Facilitation Center',
+        address: 'KDMC Office, Shankarrao Chowk',
+        lat: 19.240,
+        lon: 73.138,
+      },
+      {
+        name: 'Digi-Connect Services',
+        address: 'Adharwadi, Kalyan West',
+        lat: 19.255,
+        lon: 73.132,
+      },
+    ];
+
+    function addMarkers(lat, lon) {
+      L.marker([lat, lon])
+        .addTo(map)
+        .bindPopup('<b>Your approximate location</b>')
+        .openPopup();
+      serviceCenters.forEach((center) => {
+        L.marker([center.lat, center.lon])
+          .addTo(map)
+          .bindPopup(`<b>${center.name}</b><br>${center.address}`);
+      });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userCoords = [
+            position.coords.latitude,
+            position.coords.longitude,
+          ];
+          map.setView(userCoords, 14);
+          addMarkers(userCoords[0], userCoords[1]);
+        },
+        () => {
+          addMarkers(defaultCoords[0], defaultCoords[1]);
+          const mapContainer = document.getElementById('map');
+          const note = document.createElement('div');
+          note.innerHTML =
+            'Could not get your location. Showing centers in Kalyan.';
+          note.style.cssText =
+            'position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: #fff; padding: 5px 10px; border-radius: 5px; z-index: 1000; font-size: 12px;';
+          mapContainer.appendChild(note);
+        }
+      );
+    } else {
+      addMarkers(defaultCoords[0], defaultCoords[1]);
+    }
+  }
+
+  // Initial render
+  renderSchemes(currentFilteredSchemes, schemesGrid);
+  updateNavButtons();
+  initializeMap();
+
+});
+document.getElementById("loginBtn").addEventListener("click", async function () {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const response = await fetch("http://localhost:8080/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const result = await response.json();
+
+  if (result.status === "success") {
+    alert("Welcome, " + result.name);
+    // redirect to dashboard page
+    window.location.href = "dashboard.html";
+  } else {
+    alert(result.message);
+  }
+});
+</script>
+</body>
+</html>
